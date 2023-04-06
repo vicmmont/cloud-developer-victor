@@ -16,15 +16,48 @@ router.get('/', async (req: Request, res: Response) => {
     res.send(items);
 });
 
-//@TODO
 //Add an endpoint to GET a specific resource by Primary Key
+router.get('/:id', requireAuth, async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    if (isNaN(Number(id))) {
+        return res.status(400).send("Resource does not exist");
+    }
+
+    const item = await FeedItem.findByPk(id);
+    if (item) {
+        return res.status(200).send(item);
+    } else {
+        return res.status(404).send('Resource does not exist');
+    }
+});
 
 // update a specific resource
 router.patch('/:id', 
     requireAuth, 
     async (req: Request, res: Response) => {
-        //@TODO try it yourself
-        res.status(500).send("not implemented")
+        const { id } = req.params;
+
+        if (isNaN(Number(id))) {
+            return res.status(400).send("Resource does not exist");
+        }
+
+        const feedItem = await FeedItem.findByPk(id);
+        if (!feedItem) {
+            return res.status(400).send("Resource does not exist");
+        }
+
+        const { caption, url } = req.body;
+        feedItem.set('caption', caption);
+        feedItem.set('url', url);
+
+        try {
+        const result = await feedItem.save();
+        return res.status(200).send(result);
+        } catch {
+            return res.status(500).send("there was an error");
+        }
+        
 });
 
 
