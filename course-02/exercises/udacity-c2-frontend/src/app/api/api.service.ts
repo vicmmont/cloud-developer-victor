@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders,  HttpErrorResponse, HttpRequest, HttpEvent } from '@angular/common/http';
+import { HttpClient, HttpHeaders,  HttpErrorResponse, HttpRequest, HttpEvent, HttpEventType } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
 import { FeedItem } from '../feed/models/feed-item.model';
@@ -63,6 +63,7 @@ export class ApiService {
 
     return new Promise ( resolve => {
         this.http.request(req).subscribe((resp) => {
+          console.log(`response: ${JSON.stringify(resp)}`)
         if (resp && resp.type === HttpEventType.Response && (<any> resp).status && (<any> resp).status === 200) {
           resolve(this.post(endpoint, payload));
         }
